@@ -1,0 +1,65 @@
+{
+  "name": "@simpay/typescript",
+  "version": "1.0.0",
+  "description": "Official Simpay payment gateway SDK for TypeScript",
+  "keywords": [
+    "payments",
+    "payment-gateway",
+    "simpay",
+    "sdk",
+    "typescript",
+    "api"
+  ],
+  "homepage": "https://simpay.pl",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SimPaypl/simpay-typescript"
+  },
+  "bugs": {
+    "url": "https://github.com/SimPaypl/simpay-typescript/issues"
+  },
+  "license": "MIT",
+  "author": "SimPay",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:run": "vitest run",
+    "test:watch": "vitest",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "check:fix": "biome check --write .",
+    "verify": "npm run check && npm run build",
+    "prepack": "npm run build",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release:version": "npm run version-packages",
+    "release:publish": "npm run verify && changeset publish",
+    "release": "npm run release:publish"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.6",
+    "@changesets/cli": "^2.30.0",
+    "@types/node": "^20.19.37",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}
