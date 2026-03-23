@@ -1,6 +1,6 @@
 {
   "name": "@simpay/typescript",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Official Simpay payment gateway SDK for TypeScript",
   "keywords": [
     "payments",
