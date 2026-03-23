@@ -35,9 +35,6 @@
   "engines": {
     "node": ">=18"
   },
-  "publishConfig": {
-    "access": "public"
-  } ,
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf dist",
