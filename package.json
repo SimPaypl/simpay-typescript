@@ -8,7 +8,8 @@
     "simpay",
     "sdk",
     "typescript",
-    "api"
+    "api",
+    "simpay-typescript-api"
   ],
   "homepage": "https://simpay.pl",
   "repository": {
