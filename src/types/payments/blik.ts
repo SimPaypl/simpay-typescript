@@ -18,6 +18,58 @@ export type AliasStatus =
   | "alias_unregistered";
 export type SubscriptionsSort = "-created_at" | "created_at";
 
+type FrequencyUnit = "D" | "W" | "M" | "Y";
+type NonZeroDigit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+type Digit = "0" | NonZeroDigit;
+
+/**
+ * Frequency format accepted by SimPay recurrent subscriptions.
+ * Examples: "1D", "2W", "12M", "365D", "1Y".
+ */
+export type SubscriptionFrequency =
+  | `${NonZeroDigit}${FrequencyUnit}`
+  | `${NonZeroDigit}${Digit}${FrequencyUnit}`
+  | `${NonZeroDigit}${Digit}${Digit}${FrequencyUnit}`;
+
+export interface CreateSubscriptionOptionsModelA {
+  model: "A";
+  /** Datetime string (ISO 8601), max +10 years. */
+  expiresAt: string;
+  /** Frequency, e.g. 1M, 7D, 1Y. */
+  frequency: SubscriptionFrequency;
+  /** Amount limit per single recurrent charge. */
+  amountLimitPerTransaction: number;
+  /** Date string (YYYY-MM-DD / API date format) for first allowed recurrent charge. */
+  initiationDate: string;
+  /** Total amount limit for whole subscription. */
+  amountLimitTotal: number;
+  /** Optional max number of recurrent charges in one alias. */
+  transactionsCountLimit?: number;
+}
+
+export interface CreateSubscriptionOptionsModelO {
+  model: "O";
+  /** Date string (YYYY-MM-DD / API date format) for first allowed recurrent charge. */
+  initiationDate?: string;
+  /** Datetime string (ISO 8601), max +10 years. */
+  expiresAt?: string;
+}
+
+export interface CreateSubscriptionOptionsModelM {
+  model: "M";
+  /** Frequency, e.g. 1M, 7D, 1Y. */
+  frequency?: SubscriptionFrequency;
+  /** Datetime string (ISO 8601), max +10 years. */
+  expiresAt?: string;
+  /** Date string (YYYY-MM-DD / API date format) for first allowed recurrent charge. */
+  initiationDate?: string;
+}
+
+export type CreateSubscriptionOptions =
+  | CreateSubscriptionOptionsModelA
+  | CreateSubscriptionOptionsModelO
+  | CreateSubscriptionOptionsModelM;
+
 export interface SubscriptionAlias {
   id: string;
   type: AliasType;
@@ -122,7 +174,7 @@ export interface CreateSubscriptionRequest {
   transactionId: string;
   ticket: { T6: string };
   alias: { value: string; type: "PAYID"; label?: string };
-  options: Record<string, unknown>;
+  options: CreateSubscriptionOptions;
   descriptions?: {
     line1?: string | null;
     line2?: string | null;

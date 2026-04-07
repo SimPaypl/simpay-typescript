@@ -1,5 +1,3 @@
-# SimPay TypeScript SDK
-
 Oficjalne SDK SimPay dla TypeScript i Node.js.
 
 Biblioteka udostępnia klienta `SimPayClient` oraz moduły dla:
@@ -276,6 +274,122 @@ Odpowiedź:
 
 ## Payments → BLIK Recurrent
 
+Pełna dokumentacja SimPay dla BLIK Recurrent:
+https://docs.simpay.pl/payment/blik-recurrent
+
+### Flow Płatności Powtarzalnej BLIK (krok po kroku)
+
+#### 1) Rejestracja subskrypcji (zgoda użytkownika)
+
+Najpierw tworzysz **pierwszą transakcję** dla kanału `blik-recurrent`.
+Ta transakcja zakłada zgodę użytkownika i pozwala potem utworzyć subskrypcję.
+
+```ts
+const firstTransaction = await simpay.payments.transactions.create("service_id", {
+  amount: 0, // może być 0 tylko przy rejestracji zgody
+  currency: "PLN", // BLIK recurrent działa w PLN
+  description: "Subskrypcja premium",
+  control: "SUB-123",
+  directChannel: "blik-recurrent",
+  customer: {
+    email: "user@example.com",
+    ip: "1.2.3.4",
+    countryCode: "PL",
+  },
+  antifraud: {
+    useragent: "Mozilla/5.0 ...",
+    systemId: "user-123", // stałe ID użytkownika w Twoim systemie
+  },
+});
+```
+
+Potem tworzysz subskrypcję BLIK (model A/O/M) i podajesz kod BLIK (`ticket.T6`):
+
+```ts
+const created = await simpay.payments.blikRecurrent.create("service_id", {
+  transactionId: firstTransaction.transactionId,
+  ticket: { T6: "123456" },
+  alias: {
+    value: "AABBCC",
+    type: "PAYID",
+    label: "Subskrypcja premium",
+  },
+  options: {
+    // przykład modelu A (AUTO)
+    model: "A",
+    expiresAt: "2030-12-31T23:59:59+01:00",
+    frequency: "1M",
+    amountLimitPerTransaction: 49.99,
+    initiationDate: "2026-05-01T10:00:00+02:00",
+    amountLimitTotal: 2000,
+  },
+});
+```
+
+Jeśli rejestracja się powiedzie, dostajesz m.in.:
+
+- `subscriptionId`
+- `aliasId`
+
+> Ważne: samo `subscriptionId` **nie oznacza**, że subskrypcja jest aktywna.
+
+#### 2) Czekasz na IPN aktywujący subskrypcję
+
+Subskrypcja jest gotowa do obciążeń dopiero po notyfikacji IPN:
+
+- `subscription:status_changed`
+- ze statusem `subscription_active`
+
+#### 3) Kolejne obciążenia aktywnej subskrypcji
+
+Dopiero wtedy wywołujesz autopayment:
+
+```ts
+const autopayment = await simpay.payments.blikRecurrent.autopayment(
+  "service_id",
+  "subscription_id",
+  {
+    transactionId: "order-2026-001",
+    attempt: 0, // zakres 0-9
+    alias: {
+      noDelay: true,
+    },
+  },
+);
+```
+
+Technicznie odpowiada to endpointowi:
+
+`POST /payment/{serviceId}/blik/subscriptions/{subscriptionId}/autopayment`
+
+#### Zasady pracy z `attempt`
+
+- `attempt` wysyłasz w zakresie `0-9`.
+- Pierwsza próba to `attempt: 0`, każda kolejna próba musi zwiększać numer o `+1`.
+- Dobrą praktyką jest iterowanie prób sekwencyjnie (`0 -> 1 -> 2 ...`).
+- **Nie wysyłaj kolejnej próby, dopóki poprzednia nie jest zakończona** (np. przez finalny status transakcji/IPN). Równoległe próby dla tego samego obciążenia mogą powodować błędy walidacji lub niespójny stan.
+
+### Modele subskrypcji i `options`
+
+- **Model A** (stała kwota, bez kolejnych potwierdzeń):
+  - `options.expiresAt` (wymagane)
+  - `options.frequency` (wymagane)
+  - `options.amountLimitPerTransaction` (wymagane)
+  - `options.initiationDate` (wymagane)
+  - `options.amountLimitTotal` (wymagane)
+- **Model O** (kwota zmienna, bez potwierdzania):
+  - zazwyczaj używane: `options.initiationDate`, `options.expiresAt`
+- **Model M** (kwota zmienna, z potwierdzaniem każdej płatności):
+  - opcjonalnie: `options.initiationDate`, `options.expiresAt`, `options.frequency`
+
+### Najważniejsze rzeczy, o których łatwo zapomnieć
+
+- `antifraud.systemId` musi być stałe dla tego samego użytkownika.
+- `amount: 0` jest dozwolone tylko przy rejestracji zgody (pierwsza transakcja).
+- Kolejnych obciążeń nie wykonujesz na `0 PLN`.
+- BLIK recurrent działa tylko dla `PLN` i `customer.countryCode = "PL"`.
+- Przy pierwszej transakcji wysyłasz `customer.ip` i `antifraud.useragent`; przy kolejnych obciążeniach już nie.
+
 ### Lista subskrypcji BLIK
 
 ```ts
@@ -301,7 +415,9 @@ const created = await simpay.payments.blikRecurrent.create("service_id", {
     type: "PAYID",
     label: "Subskrypcja premium",
   },
-  options: {},
+  options: {
+    model: "O",
+  },
 });
 ```
 
@@ -313,6 +429,7 @@ const autopayment = await simpay.payments.blikRecurrent.autopayment(
   "subscription_id",
   {
     transactionId: "tx_456",
+    attempt: 0,
   },
 );
 ```

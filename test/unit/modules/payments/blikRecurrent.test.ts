@@ -295,7 +295,7 @@ describe("BlikRecurrentApi", () => {
       transactionId: "tx_1",
       ticket: { T6: "123123" },
       alias: { value: "AAABBCC", type: "PAYID", label: "Premium" },
-      options: {},
+      options: { model: "O" },
       descriptions: { line1: "L1", line2: "L2", line3: "L3" },
     };
 
@@ -322,7 +322,7 @@ describe("BlikRecurrentApi", () => {
       transactionId: "tx_1",
       ticket: { T6: "123123" },
       alias: { value: "AAABBCC", type: "PAYID" },
-      options: {},
+      options: { model: "O" },
     };
 
     const httpClient = {
