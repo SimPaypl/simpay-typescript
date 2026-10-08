@@ -33,11 +33,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint (optional)
-        run: npm run lint --if-present
+      - parallel:
+          - name: Lint (optional)
+            run: npm run lint --if-present
 
-      - name: Build
-        run: npm run build
+          - name: Build
+            run: npm run build
 
-      - name: Test
-        run: npm run test
+          - name: Test
+            run: npm run test
