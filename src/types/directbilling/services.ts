@@ -1,10 +1,12 @@
 export type DirectBillingServiceStatus =
-  | "service_new"
   | "service_active"
-  | "service_blocked"
-  | "service_rejected"
+  | "service_db_new"
+  | "service_db_blocked"
+  | "service_db_deleted"
+  | "service_db_second_verify"
+  | "service_db_rejected"
   | "service_verify"
-  | "service_ongoing_registration";
+  | "service_db_ongoing_registration";
 
 export interface DirectBillingServiceItem {
   id: string;
