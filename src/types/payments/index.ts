@@ -39,11 +39,13 @@ export type {
   CreateTransactionRequest,
   CreateTransactionResponse,
   TransactionAddress,
+  TransactionAmount,
   TransactionAntifraud,
   TransactionCartItem,
   TransactionChannelTypes,
   TransactionCustomer,
   TransactionDetails,
+  TransactionListItem,
   TransactionListQuery,
   TransactionReturns,
 } from "./transactions.js";
