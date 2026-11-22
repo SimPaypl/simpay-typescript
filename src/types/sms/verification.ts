@@ -11,7 +11,8 @@ export interface VerifyCodeResponse {
   test: boolean;
   from: string;
   number: SmsServiceNumber;
-  value: number;
+  /** The API sends this decimal as a string, such as "0.50". */
+  value: number | string;
   /** Only present when the code had already been used. */
   used_at?: string;
 }
