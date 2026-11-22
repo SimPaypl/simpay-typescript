@@ -14,7 +14,7 @@
   "homepage": "https://simpay.pl",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SimPaypl/simpay-typescript"
+    "url": "git+https://github.com/SimPaypl/simpay-typescript.git"
   },
   "bugs": {
     "url": "https://github.com/SimPaypl/simpay-typescript/issues"
