@@ -19,7 +19,8 @@ export interface DirectBillingTransactionItem {
 
 export interface DirectBillingTransactionDetails
   extends DirectBillingTransactionItem {
-  phoneNumber: string | null;
+  /** The API sends the number as a JSON number, such as 48123123123. */
+  phoneNumber: number | null;
   control: string | null;
   notify: {
     is_send: boolean;
