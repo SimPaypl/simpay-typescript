@@ -3,9 +3,11 @@ import type { SmsServiceNumber } from "./numbers.js";
 export interface SmsTransaction {
   id: number;
   from: number;
-  code: string;
+  code: string | null;
   used: boolean;
-  send_number: SmsServiceNumber;
-  value: number;
+  /** Only in `get()`, the list does not include it. */
+  send_number?: SmsServiceNumber;
+  /** Only in `get()`, the list does not include it. Sent as a string, such as "0.50". */
+  value?: number | string;
   send_at: string;
 }

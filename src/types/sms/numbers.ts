@@ -28,7 +28,8 @@ export type SmsServiceNumber =
 
 export interface SmsNumber {
   number: SmsServiceNumber;
-  value: number;
+  /** The API sends this decimal as a string, such as "0.50". */
+  value: number | string;
   value_gross: number;
   adult: boolean;
 }
