@@ -15,11 +15,20 @@ export type SmsServiceNumber =
   | 91664
   | 91955
   | 92055
-  | 92555;
+  | 92555
+  | 70908
+  | 71908
+  | 72998
+  | 73908
+  | 75908
+  | 76908
+  | 79908
+  | 91998
+  | 92598;
 
 export interface SmsNumber {
   number: SmsServiceNumber;
   value: number;
-  value_net: number;
+  value_gross: number;
   adult: boolean;
 }

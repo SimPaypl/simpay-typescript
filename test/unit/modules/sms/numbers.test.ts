@@ -26,7 +26,7 @@ describe("SmsNumbersApi", () => {
   });
 
   it("should call correct endpoint in get()", async () => {
-    const number = { number: 7055, value: 2, value_net: 2.46, adult: false };
+    const number = { number: 7055, value: 2, value_gross: 2.46, adult: false };
     const httpClient = {
       request: vi.fn().mockResolvedValue({ success: true, data: number }),
     };
@@ -64,7 +64,7 @@ describe("SmsNumbersApi", () => {
   });
 
   it("should call correct endpoint in getByService()", async () => {
-    const number = { number: 7055, value: 2, value_net: 2.46, adult: false };
+    const number = { number: 7055, value: 2, value_gross: 2.46, adult: false };
     const httpClient = {
       request: vi.fn().mockResolvedValue({ success: true, data: number }),
     };
