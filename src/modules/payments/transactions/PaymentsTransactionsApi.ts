@@ -8,6 +8,7 @@ import type {
   CreateTransactionRequest,
   CreateTransactionResponse,
   TransactionDetails,
+  TransactionListItem,
 } from "../../../types/index.js";
 
 export class PaymentsTransactionsApi {
@@ -25,13 +26,13 @@ export class PaymentsTransactionsApi {
   public async list(
     serviceId: string,
     page?: number,
-  ): Promise<TransactionDetails[]> {
+  ): Promise<TransactionListItem[]> {
     if (!serviceId) {
       throw new SimPayValidationError("serviceId is required");
     }
 
     const response = await this.httpClient.request<
-      ApiResponse<TransactionDetails[]>
+      ApiResponse<TransactionListItem[]>
     >({
       method: "GET",
       path: `/payment/${serviceId}/transactions?page=${page ?? 1}`,
