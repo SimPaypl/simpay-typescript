@@ -20,21 +20,40 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org
 
-      - run: npm ci
+      # Publish only when package.json carries a version that is not on npm yet,
+      # so pushes that do not bump the version (CI, docs) do not fail the job.
+      - name: Check whether this version is already published
+        id: version
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "$NAME@$VERSION is already on npm, skipping the release."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
 
-      - run: npm run build
+      - if: steps.version.outputs.publish == 'true'
+        run: npm ci
 
-      - run: npm publish
+      - if: steps.version.outputs.publish == 'true'
+        run: npm run build
+
+      - if: steps.version.outputs.publish == 'true'
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create git tag
+        if: steps.version.outputs.publish == 'true'
         run: |
-          VERSION=$(node -p "require('./package.json').version")
-          git tag v$VERSION
-          git push origin v$VERSION
+          git tag v${{ steps.version.outputs.version }}
+          git push origin v${{ steps.version.outputs.version }}
 
       - name: Create GitHub Release
+        if: steps.version.outputs.publish == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag: v${{ github.event.inputs.version }}
+          tag_name: v${{ steps.version.outputs.version }}
