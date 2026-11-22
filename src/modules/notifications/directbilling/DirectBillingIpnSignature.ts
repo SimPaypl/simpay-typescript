@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import type { DirectBillingTransactionNotification } from "../../../types/index.js";
+import { phpScalarToString } from "../phpScalarToString.js";
 
 export class DirectBillingIpnSignature {
   public generate(
@@ -48,7 +49,7 @@ export class DirectBillingIpnSignature {
       return;
     }
 
-    out.push(String(value));
+    out.push(phpScalarToString(value));
   }
 
   private isValidHex(str: string): boolean {

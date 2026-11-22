@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { phpScalarToString } from "../phpScalarToString.js";
 
 export class PaymentIpnSignature {
   /**
@@ -74,7 +75,7 @@ export class PaymentIpnSignature {
           flatten(value);
         });
       } else {
-        result.push(String(obj));
+        result.push(phpScalarToString(obj));
       }
     };
 
