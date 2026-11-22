@@ -11,10 +11,10 @@ export interface DirectBillingTransactionItem {
   id: string;
   status: DirectBillingTransactionStatus;
   value: number;
-  value_netto: number;
+  value_net: number;
   operator: DirectBillingOperator | null;
   created_at: string;
-  updated_at: string;
+  updated_at: string | null;
 }
 
 export interface DirectBillingTransactionDetails
@@ -24,7 +24,7 @@ export interface DirectBillingTransactionDetails
   notify: {
     is_send: boolean;
     last_send_at: string;
-    count: number;
+    count: number | null;
   };
 }
 

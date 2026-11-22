@@ -12,5 +12,6 @@ export interface VerifyCodeResponse {
   from: string;
   number: SmsServiceNumber;
   value: number;
-  send_at?: string;
+  /** Only present when the code had already been used. */
+  used_at?: string;
 }
